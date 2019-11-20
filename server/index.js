@@ -22,7 +22,7 @@ router.get("/:name_url", (req, res) => {
     });
   }
 
-  async function recursiva(object) {
+  async function getFinalObject(object) {
     let local_promises = [];
     let props = await getProperties([...Object.keys(object.properties)]);
     props.forEach(async function test(elem) {
@@ -36,7 +36,7 @@ router.get("/:name_url", (req, res) => {
         object.properties[elem.name] = "yes";
       }
       if (elem.properties) {
-        let props_promise = recursiva(elem);
+        let props_promise = getFinalObject(elem);
         local_promises.push(props_promise);
         object.properties[elem.name] = await props_promise;
       }
@@ -47,7 +47,7 @@ router.get("/:name_url", (req, res) => {
 
   async function getEverything() {
     const physicalObject = await getObject(search);
-    res.json(await recursiva(physicalObject));
+    res.json(await getFinalObject(physicalObject));
   }
   getEverything();
 });
