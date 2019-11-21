@@ -24,21 +24,22 @@ export default class Results extends Component {
   };
   componentDidMount = () => {
     const query = this.props.match.params.name_url;
-    axios
-      .get(`/${query}`)
-      .then(response => {
+    axios.get(`/${query}`).then(response => {
+      if (typeof response.data === "string") {
+        this.setState({ errorMessage: response.data });
+      } else {
         physicalObject = response.data;
         this.setState({});
-      })
-      .catch(err => {
-        this.setState({ errorMessage: "Sorry Page doesn´t exist" });
-      });
+      }
+    });
   };
 
   render() {
     return (
       <div>
-        {physicalObject.properties ? (
+        {this.state.errorMessage ? (
+          <h1>{this.state.errorMessage}</h1>
+        ) : physicalObject.properties ? (
           <>
             <h1>{physicalObject.name}</h1>
             <Properties
@@ -49,9 +50,7 @@ export default class Results extends Component {
               selectedProperties={this.state.selectedProperties}
             ></Properties>
           </>
-        ) : (
-          <h1>Sorry the object you are looking for doesn´t exist</h1>
-        )}
+        ) : null}
       </div>
     );
   }

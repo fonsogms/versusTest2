@@ -8,8 +8,15 @@ router.get("/:name_url", (req, res) => {
   function getObject(name) {
     return new Promise(resolve => {
       fdb.findByNameUrl([name], function(err, data) {
-        const properties = data[0];
-        resolve(properties);
+        if (data.length > 0) {
+          console.log(data);
+          const properties = data[0];
+
+          resolve(properties);
+        } else {
+          console.log(data);
+          resolve(err);
+        }
       });
     });
   }
@@ -47,7 +54,11 @@ router.get("/:name_url", (req, res) => {
 
   async function getEverything() {
     const physicalObject = await getObject(search);
-    res.json(await getFinalObject(physicalObject));
+    if (physicalObject === null) {
+      res.json("These are not the items you are looking for");
+    } else {
+      res.json(await getFinalObject(physicalObject));
+    }
   }
   getEverything();
 });
